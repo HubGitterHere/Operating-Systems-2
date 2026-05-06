@@ -19,7 +19,7 @@ void *printBanner1(void *arg)
 }
 void *printBanner2(void *arg)
 {
-	int times = 20;
+	int times = (int) arg;
 	int rand_value;
 	for (int i=0; i<times; i++) {
 		printf("                    Thread 2 working ... ");
@@ -32,9 +32,10 @@ void *printBanner2(void *arg)
 int main(int argc, char *argv[])
 {
     pthread_t p1, p2;
+    int times = 30;
 
     pthread_create(&p1, NULL, printBanner1, (void *) NULL);
-    pthread_create(&p2, NULL, printBanner1, (void *) NULL);
+    pthread_create(&p2, NULL, printBanner2, (void *) times);
     pthread_join(p2, NULL);
     pthread_join(p1, NULL);
     //*printBanner1((void *) NULL);
