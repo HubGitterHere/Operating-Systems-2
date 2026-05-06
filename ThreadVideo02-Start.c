@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
-//#include <unistd.h>
-#include <windows.h>
+#include <unistd.h>
 #include <stdlib.h>
 #define MAX 5
 
