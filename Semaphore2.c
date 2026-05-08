@@ -4,59 +4,66 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <math.h>
+#include <semaphore.h>
 
-pthread_mutex_t lockArrays;
-pthread_cond_t condStage;
+//pthread_mutex_t lockArrays;
+//pthread_cond_t condStage;
+sem_t semaphore1;
+sem_t semaphore2;
 
 // Input:{Number of sides, length of one side}
 volatile float input[] = { 0.0, 0.0 };
 // Output: {area, perimeter, shortest distance bewtween non-adjacent vertices}
 volatile float output[] = { 0.0, 0.0, 0.0 };
 // global variable for ordering
-   int stage = 0;
+//   int stage = 0;
 
 
 // Calculates the area of a regular polygon
 void *area(void *arg)
 {
-	pthread_mutex_lock(&lockArrays);
+//	pthread_mutex_lock(&lockArrays);
 		// Critical Section
 	    double a = (input[1] * input[1] * input[0])/(4.0*tan((double) (M_PI/input[0])));
 	    output[0] = (float) a;
 		printf("Setting value of area = %.2f \n", output[0]);
-		stage = 1;
-		pthread_cond_signal(&condStage);
+//		stage = 1;
+//		pthread_cond_signal(&condStage);
 	    // End of Critical Section
-	pthread_mutex_unlock(&lockArrays);
+		sem_post(&semaphore1);
+//	pthread_mutex_unlock(&lockArrays);
     return NULL;
 }
 
 // Caluclates the perimeter of a regular polygon
 void *perimeter(void *arg)
 {
-	pthread_mutex_lock(&lockArrays);
-	while (stage < 1) pthread_cond_wait(&condStage, &lockArrays);
+//	pthread_mutex_lock(&lockArrays);
+//	while (stage < 1) pthread_cond_wait(&condStage, &lockArrays);
+		sem_wait(&semaphore1);
 		// Critical Section
 	    output[1] = input[0]*input[1];
 		printf("Setting value of perimeter = %.2f \n", output[1]);
-		stage = 2;
-		pthread_cond_signal(&condStage);
+//		stage = 2;
+//		pthread_cond_signal(&condStage);
 	    // End of Critical Section
-	pthread_mutex_unlock(&lockArrays);
+		sem_post(&semaphore2);
+//	pthread_mutex_unlock(&lockArrays);
     return NULL;
 }
 
 // Caculates the shortest distance between two non-adjacent vertices
 void *distance(void *arg)
 {
-	pthread_mutex_lock(&lockArrays);
-	while (stage < 2) pthread_cond_wait(&condStage, &lockArrays);
+//	pthread_mutex_lock(&lockArrays);
+//	while (stage < 2) pthread_cond_wait(&condStage, &lockArrays);
+		sem_wait(&semaphore2);
 		// Critical Section
 	    double a = (2.0 * input[1] * sin((double) (M_PI/input[0])));
 	    output[2] = (float) a;
 		printf("Setting value of smallest distance between non consecutive vertices = %.2f \n", output[2]);
 	    // End of Critical Section
-	pthread_mutex_unlock(&lockArrays);
+//	pthread_mutex_unlock(&lockArrays);
     return NULL;
 }
 
@@ -74,11 +81,13 @@ int main(int argc, char *argv[])
 	    input[1] = atof(argv[2]);
     }
 
-    if (pthread_mutex_init(&lockArrays, NULL)!=0) { ;
+/*    if (pthread_mutex_init(&lockArrays, NULL)!=0) { ;
 		printf("Lock could not be initialized.\n");
 		return -1;
-	}
+	}*/
 
+	sem_init(&semaphore1, 0, 0);
+	sem_init(&semaphore2, 0, 0);
 
     // Creating separated threads for calculation
     pthread_t p1,p2, p3;
