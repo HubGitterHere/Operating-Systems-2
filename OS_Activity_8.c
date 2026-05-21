@@ -32,6 +32,35 @@ void sorting(int arr[], int size){
     }
 
 }
+//based off of AI overview
+void SCANscheduling(int arr[], int size, int diskHead){
+    int movement = 0;
+    int newDiskHead = diskHead;
+    //get index of diskHead in array
+    int index = -1;
+    for(int i = 0; i < size; i++){
+        if(arr[i]== diskHead){
+            index = i;
+            break;
+        }
+    }
+    //scan lower disk
+    newDiskHead = diskHead;
+    printf("current movements: ");
+    for(int i=index-1; i>= 0; i--){
+        movement += abs(newDiskHead-arr[i]);
+        newDiskHead = arr[i];
+        printf("%d, ", movement);
+    }
+    //scan upper disk
+    newDiskHead = diskHead;
+    for(int i=index+1; i < size; i++){
+        movement += abs(newDiskHead-arr[i]);
+        newDiskHead = arr[i];
+        printf("%d, ", movement);
+    }
+    printf("\n");
+}
 int main(int argc, char *argv[])
 {
     int size = 10;
@@ -46,10 +75,8 @@ int main(int argc, char *argv[])
     }
     sorting(SCAN_array, size);
     int diskHead = FCFS_array[0];
-
-    for (int i = 0; i < size; i++){
-        printf("%d\n", SCAN_array[i]);
-    }
+    printf("SCAN scheduling\n");
+    SCANscheduling(SCAN_array, size, diskHead);
     
     return 0;
 }
