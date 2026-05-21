@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
     FCFSscheduling(FCFS_array, size);
     //print SCAN scheduling
     int SCAN_array[size];
+    //Copy FCFS array
     for (int i=0; i<size; i++){
         SCAN_array[i] = FCFS_array[i];
     }
